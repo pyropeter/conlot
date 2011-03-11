@@ -1,10 +1,20 @@
 {% extends "base.html" %}
-
-{% block head %}
-{% endblock %}
-
+{% block title %}Startseite{% endblock %}
 {% block content %}
 
-<h1>content</h1>
+<h1>Meine Kurse</h1>
+
+<table class="kurse" border=2>
+  <tr>
+    <th>Kurs</th>
+    <th>Lehrer</th>
+  </tr>
+  {% for kurs in kurse %}
+  <tr>
+    <td>{{ kurs.kuerzel }}</td>
+    <td>{{ kurs.lehrer.kuerzel }}</td>
+  </tr>
+  {% endfor %}
+</table>
 
 {% endblock %}

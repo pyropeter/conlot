@@ -2,14 +2,11 @@
 <html lang="de">
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %} - Conlot, Ihr freundliches Notenvergabesystem</title>
     <link rel=stylesheet type="text/css" href="/media/main.css">
     {% block head %}{% endblock %}
   </head>
   <body>
-    <p> Hello, world! </p>
     {% block content %}{% endblock %}
-    <h1>DEBUG</h1>
-    <pre>{% filter force_escape %}{% debug %}{% endfilter %}</pre>
   </body>
 </html>

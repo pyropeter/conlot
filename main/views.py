@@ -1,7 +1,12 @@
-from django.shortcuts import render_to_response
+from django.views.generic.simple import direct_to_template
+
+from main import models
 
 def index(request):
-    return render_to_response('index.html')
-
+    kurse = models.Kurs.objects.all()
+    context = {
+            'kurse': kurse,
+    }
+    return direct_to_template(request, "index.html", context)
 
 
