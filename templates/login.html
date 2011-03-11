@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Anmeldung - conlot</title>
+    <link rel=stylesheet type="text/css" href="/media/main.css">
+  </head>
+  <body>
+    <div class="anmeldung">
+      <h2>Anmeldung</h2>
+      {% if form.has_errors %}
+        <div class="error">
+          Benutzername oder Passwort sind falsch.<br>
+          Bitte versuchen sie es erneut.
+        </div>
+      {% endif %}
+      <form method="POST">{% csrf_token %}
+        <fieldset>
+          {{ form.as_p }}
+          <p><label></label> <input type="submit" value="Anmelden"></p>
+        </fieldset>
+      </form>
+    </div>
+  </body>
+</html>
