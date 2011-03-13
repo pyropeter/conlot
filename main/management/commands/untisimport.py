@@ -5,8 +5,8 @@ from django.core.management.base import BaseCommand, CommandError
 from main.models import *
 from django.contrib.auth.models import User
 
-from os import path
-import csv, re
+from os import path, stat
+import csv, re, sys
 
 class Command(BaseCommand):
     args = '<Pfad zum Ordner, in dem die GPU-Dateien liegen>'
@@ -25,10 +25,24 @@ class Command(BaseCommand):
 
 class GPULeser:
     def __init__(self, dateiname):
-       self.reader = csv.reader(open(dateiname, "rb"))
+        self.fd = open(dateiname, "rb")
+        self.size = stat(dateiname).st_size
+        self.reader = csv.reader(self.fd)
+        self.lastnum = 0
+
+    def getFortschritt(self):
+        return self.fd.tell() / float(self.size)
 
     def next(self):
-        return [s.decode("latin1") for s in self.reader.next()]
+        if self.getFortschritt()*80 > self.lastnum:
+            self.lastnum += 1
+            sys.stdout.write("#")
+            sys.stdout.flush()
+        try:
+            return [s.decode("latin1") for s in self.reader.next()]
+        except StopIteration:
+            print "#" * (80 - self.lastnum)
+            raise
 
     def __iter__(self):
         return self
@@ -40,6 +54,7 @@ def loescheAltesZeug():
     Lehrer.objects.all().delete()
     Schueler.objects.all().delete()
     Klasse.objects.all().delete()
+    print
 
 def importiereKlassen(datei):
     print "Importiere Klassen..."
@@ -47,6 +62,7 @@ def importiereKlassen(datei):
         neueKlasse = Klasse()
         neueKlasse.kuerzel = data[0]
         neueKlasse.save()
+    print
 
 def importiereLehrer(datei):
     print "Importiere Lehrer..."
@@ -62,6 +78,7 @@ def importiereLehrer(datei):
 
         neuerLehrer.account = neuerAccount
         neuerLehrer.save()
+    print
 
 def importiereSchueler(datei):
     print "Importiere Schueler..."
@@ -76,6 +93,7 @@ def importiereSchueler(datei):
         neuerSchueler.geschlecht = "M"  if  data[6] == "M"  else  "W"
         neuerSchueler.klasse = Klasse.objects.get(kuerzel__exact = data[9])
         neuerSchueler.save()
+    print
 
 def importiereKurse(datei, bezeichnungsdatei):
     print "Importiere Kurse..."
@@ -92,6 +110,7 @@ def importiereKurse(datei, bezeichnungsdatei):
             except Lehrer.DoesNotExist:
                 pass
             neuerKurs.save()
+    print
 
 def importiereBelegungen(datei):
     print "Importiere Belegungen..."
@@ -100,4 +119,5 @@ def importiereBelegungen(datei):
         neueBelegung.kurs = Kurs.objects.get(untisid__exact = int(data[1]))
         neueBelegung.schueler = Schueler.objects.get(untisid__exact = data[0])
         neueBelegung.save()
+    print
 
